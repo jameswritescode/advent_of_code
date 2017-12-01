@@ -1,2 +1,3 @@
-# advent_of_code_2017
-My exact answers for Advent of Code 2017
+# [Advent of Code 2017](http://adventofcode.com/2017)
+
+This repo contains the code I used for my answers, most of it isn't pretty.
