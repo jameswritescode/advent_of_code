@@ -15,4 +15,4 @@ grid = Math.sqrt(i)
 
 puts ((grid - 1) - (i - num)).to_i
 
-# step 2 (omg, coming later)
+# step 2 (omg, coming later) https://oeis.org/A141481
