@@ -24,3 +24,10 @@ loop do
 
   history << blocks
 end
+
+# Couple of notes here for me and anyone bothering to read:
+# TIL of Array#rotate (which feels kind of dirty)
+# TIL from my friend @joeltaylor that a nice alternative is array[index % array.length]
+# so 13-15 could be replaced with:
+#  
+#   blocks[rotate_to % blocks.count] += 1
