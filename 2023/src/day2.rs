@@ -1,68 +1,65 @@
-use std::collections::HashMap;
+use std::cmp::max;
 
-struct Game<'a> {
-    id: u32,
-    cubes: HashMap<&'a str, u32>,
+struct Cubes {
+    red: usize,
+    green: usize,
+    blue: usize,
 }
 
-fn solve_part1(games: &Vec<Game>) -> u32 {
+fn solve_part1(games: &Vec<Cubes>) -> usize {
     games
         .iter()
-        .filter(|game| {
-            let cubes = &game.cubes;
-
-            cubes.get("red").unwrap() <= &12
-                && cubes.get("green").unwrap() <= &13
-                && cubes.get("blue").unwrap() <= &14
-        })
-        .map(|g| g.id)
+        .enumerate()
+        .filter(|(_, cubes)| cubes.red <= 12 && cubes.green <= 13 && cubes.blue <= 14)
+        .map(|(idx, _)| idx + 1)
         .sum()
 }
 
-fn solve_part2(games: &Vec<Game>) -> u32 {
+fn solve_part2(games: &Vec<Cubes>) -> usize {
     games
         .iter()
-        .map(|game| game.cubes.iter().fold(1, |acc, (_color, &num)| acc * num))
+        .map(|cubes| cubes.red * cubes.blue * cubes.green)
         .sum()
 }
 
-fn parse_games<'a>(input: &'a String) -> Vec<Game<'a>> {
+fn parse_cubes(input: String) -> Vec<Cubes> {
     input
         .lines()
         .map(|line| {
-            let parts: Vec<&str> = line.split(": ").collect();
-            let mut cubes = HashMap::new();
+            let mut cubes = Cubes {
+                red: 0,
+                green: 0,
+                blue: 0,
+            };
 
-            parts[1].split("; ").for_each(|sets| {
-                let set_list = sets.split(", ");
+            line.split(": ")
+                .nth(1)
+                .unwrap()
+                .split("; ")
+                .for_each(|sets| {
+                    for set in sets.split(", ") {
+                        let mut parts = set.split(" ");
+                        let num = parts.next().unwrap().parse().unwrap();
+                        let color = parts.next().unwrap();
 
-                set_list.for_each(|set| {
-                    let draw: Vec<&str> = set.split(" ").collect();
-                    let num = draw[0].parse::<u32>().unwrap();
+                        match color {
+                            "red" => cubes.red = max(num, cubes.red),
+                            "green" => cubes.green = max(num, cubes.green),
+                            "blue" => cubes.blue = max(num, cubes.blue),
+                            _ => panic!("Unknown color: {color}"),
+                        }
+                    }
+                });
 
-                    cubes
-                        .entry(draw[1])
-                        .and_modify(|n| {
-                            if *n < num {
-                                *n = num
-                            }
-                        })
-                        .or_insert(num);
-                })
-            });
-
-            Game {
-                id: parts[0].split(" ").last().unwrap().parse::<u32>().unwrap(),
-                cubes,
-            }
+            cubes
         })
         .collect()
 }
 
 pub fn run(input: String) {
-    let games = parse_games(&input);
-    let part1_result = solve_part1(&games);
-    let part2_result = solve_part2(&games);
+    let cubes = parse_cubes(input);
+    let part1_result = solve_part1(&cubes);
+    let part2_result = solve_part2(&cubes);
 
     println!("Part 1: {part1_result}");
     println!("Part 2: {part2_result}");
