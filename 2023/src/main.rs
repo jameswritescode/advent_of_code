@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 use std::fs;
 
 mod day1;
+mod day2;
 
 #[derive(Parser)]
 struct Cli {
@@ -15,6 +16,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Day1,
+    Day2,
 }
 
 fn main() {
@@ -23,6 +25,7 @@ fn main() {
 
     match &cli.command {
         Some(Commands::Day1) => day1::run(input),
+        Some(Commands::Day2) => day2::run(input),
 
         None => {}
     }
