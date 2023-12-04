@@ -3,6 +3,7 @@ use std::fs;
 
 mod day1;
 mod day2;
+mod day3;
 
 #[derive(Parser)]
 struct Cli {
@@ -17,6 +18,7 @@ struct Cli {
 enum Commands {
     Day1,
     Day2,
+    Day3,
 }
 
 fn main() {
@@ -26,6 +28,7 @@ fn main() {
     match &cli.command {
         Some(Commands::Day1) => day1::run(input),
         Some(Commands::Day2) => day2::run(input),
+        Some(Commands::Day3) => day3::run(input),
 
         None => {}
     }
