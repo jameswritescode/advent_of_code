@@ -37,6 +37,21 @@ fn solve_part1(cards: &Cards) -> usize {
         .sum()
 }
 
+// h/t https://is.gd/OsjzYI
+fn solve_part2(cards: &Cards) -> usize {
+    let mut counts = vec![1; cards.len()];
+
+    for (i, card) in cards.iter().enumerate() {
+        let j = card.matches + i;
+
+        for k in i + 1..j + 1 {
+            counts[k] += counts[i];
+        }
+    }
+
+    counts.iter().sum()
+}
+
 pub fn run(input: String) {
     let cards = input
         .lines()
@@ -44,6 +59,8 @@ pub fn run(input: String) {
         .collect();
 
     let part1_result = solve_part1(&cards);
+    let part2_result = solve_part2(&cards);
 
     println!("Part 1: {part1_result}");
+    println!("Part 2: {part2_result}");
 }
