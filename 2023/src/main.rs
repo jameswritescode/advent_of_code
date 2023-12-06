@@ -4,6 +4,7 @@ use std::fs;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 #[derive(Parser)]
 struct Cli {
@@ -19,6 +20,7 @@ enum Commands {
     Day1,
     Day2,
     Day3,
+    Day4,
 }
 
 fn main() {
@@ -29,6 +31,7 @@ fn main() {
         Some(Commands::Day1) => day1::run(input),
         Some(Commands::Day2) => day2::run(input),
         Some(Commands::Day3) => day3::run(input),
+        Some(Commands::Day4) => day4::run(input),
 
         None => {}
     }
