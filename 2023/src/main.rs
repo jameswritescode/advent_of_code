@@ -9,6 +9,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 
 #[derive(Parser)]
 struct Cli {
@@ -29,6 +30,7 @@ enum Commands {
     Day6,
     Day7,
     Day8,
+    Day9,
 }
 
 fn main() {
@@ -44,7 +46,7 @@ fn main() {
         Some(Commands::Day6) => day6::run(input),
         Some(Commands::Day7) => day7::run(input),
         Some(Commands::Day8) => day8::run(input),
-
+        Some(Commands::Day9) => day9::run(input),
         None => {}
     }
 }
