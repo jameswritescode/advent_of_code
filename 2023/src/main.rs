@@ -4,6 +4,7 @@ use std::fs;
 mod day1;
 mod day2;
 mod day3;
+mod day14;
 mod day4;
 mod day5;
 mod day6;
@@ -31,6 +32,7 @@ enum Commands {
     Day7,
     Day8,
     Day9,
+    Day14,
 }
 
 fn main() {
@@ -47,6 +49,7 @@ fn main() {
         Some(Commands::Day7) => day7::run(input),
         Some(Commands::Day8) => day8::run(input),
         Some(Commands::Day9) => day9::run(input),
+        Some(Commands::Day14) => day14::run(input),
         None => {}
     }
 }
