@@ -7,6 +7,14 @@ import (
 	"strings"
 )
 
+type Result struct {
+	Index   int
+	Report  []int
+	Success bool
+}
+
+type Reports [][]int
+
 func main() {
 	data, err := os.ReadFile(os.Args[1])
 
@@ -23,6 +31,48 @@ func main() {
 	}
 
 	part1(reports)
+	part2(reports)
+}
+
+func part1(reports Reports) {
+	safe := 0
+
+	check(reports, func(result Result) {
+		if result.Success {
+			safe++
+		}
+	})
+
+	println(safe)
+}
+
+func part2(reports Reports) {
+	safe := 0
+
+	check(reports, func(result Result) {
+		if result.Success {
+			safe++
+		} else {
+			for i := 0; i < len(result.Report); i++ {
+				alternativeReport := append([]int{}, result.Report[:i]...)
+				alternativeReport = append(alternativeReport, result.Report[i+1:]...)
+				success := false
+
+				check(Reports{alternativeReport}, func(result Result) {
+					if result.Success {
+						success = true
+					}
+				})
+
+				if success {
+					safe++
+					break
+				}
+			}
+		}
+	})
+
+	println(safe)
 }
 
 func convert(r []string) []int {
@@ -36,34 +86,26 @@ func convert(r []string) []int {
 	return reports
 }
 
-func dir(a, b int) int {
-	if a > b {
-		return 1
-	}
-
-	return 2
-}
-
-func part1(reports [][]int) {
-	safeReports := 0
-
+func check(reports Reports, cb func(result Result)) {
 	for _, report := range reports {
-		safeReport := true
-		firstDir := dir(report[0], report[1])
+		direction := report[0] > report[1]
+
+		result := Result{
+			Report:  report,
+			Success: true,
+		}
 
 		for i := 0; i < len(report)-1; i++ {
 			a, b := report[i], report[i+1]
 
-			if dir(a, b) != firstDir || !(a != b && math.Abs(float64(a-b)) <= 3) {
-				safeReport = false
+			if a == b || a > b != direction || math.Abs(float64(a-b)) > 3 {
+				result.Success = false
+				result.Index = i
+
 				break
 			}
 		}
 
-		if safeReport {
-			safeReports++
-		}
+		cb(result)
 	}
-
-	println(safeReports)
 }
