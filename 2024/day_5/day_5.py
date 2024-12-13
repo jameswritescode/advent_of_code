@@ -1,12 +1,10 @@
-import math
 import sys
 
 from collections import defaultdict
 
-type Rules = dict[int, list[int]]
 
-class Validator:
-    def __init__(self, rules: Rules, updates: list[list[int]]):
+class PageOrderer:
+    def __init__(self, rules: dict[int, list[int]], updates: list[list[int]]):
         self.rules = rules
         self.updates = updates
 
@@ -15,19 +13,18 @@ class Validator:
         with open(path) as file:
             content = file.read()
 
-        content = content.rstrip().split('\n\n')
-        rules, updates = [section.split('\n') for section in content]
-        rules = [cls.__parse_input_list(rule, '|') for rule in rules]
-        updates = [cls.__parse_input_list(update, ',') for update in updates]
+        content = content.rstrip().split("\n\n")
+        rules, updates = [section.split("\n") for section in content]
 
-        return cls(cls.__parse_rules(rules), updates)
+        return cls(cls.__parse_rules(rules), cls.__parse_section(updates, ","))
 
-    @classmethod
-    def __parse_input_list(cls, input, split_on):
-        return list(map(int, input.split(split_on)))
+    @staticmethod
+    def __parse_section(input, split_on):
+        return [[int(i) for i in line.split(split_on)] for line in input]
 
     @classmethod
-    def __parse_rules(cls, rules) -> Rules:
+    def __parse_rules(cls, input):
+        rules = cls.__parse_section(input, "|")
         mapping = defaultdict(list)
 
         for rule in rules:
@@ -35,33 +32,44 @@ class Validator:
 
         return mapping
 
-
-    def valid_updates(self):
+    def ensure_ordering(self):
         valid_updates = []
+        repaired_updates = []
 
         for update in self.updates:
-            if self.__valid_update(update):
-                valid_updates.append(update)
+            (result, repair) = self.__order(update)
 
-        return valid_updates
+            if repair:
+                repaired_updates.append(result)
+            else:
+                valid_updates.append(result)
 
-    def __valid_update(self, pages: list[int]):
+        return valid_updates, repaired_updates
+
+    def __order(self, pages):
         seen = []
+        repaired = False
 
         for page in pages:
             subsequent_pages = self.rules[page]
-            subsequent_page_seen = any(sp in seen for sp in subsequent_pages)
+            subsequent_pages_seen = [sp for sp in subsequent_pages if sp in seen]
 
-            if subsequent_page_seen:
-                return False
+            if any(subsequent_pages_seen):
+                repaired = True
+                num = next(p for p in seen if p in subsequent_pages_seen)
+                seen.insert(seen.index(num), page)
+            else:
+                seen.append(page)
 
-            seen.append(page)
+        return seen, repaired
 
-        return True
 
-def part1():
-    valid_updates = Validator.parse(sys.argv[1]).valid_updates()
-    middle = lambda update: update[math.floor(len(update) / 2)]
-    print(sum([middle(update) for update in valid_updates]))
+def calc(updates):
+    print(sum([update[len(update) // 2] for update in updates]))
 
-part1()
+
+validator = PageOrderer.parse(sys.argv[1])
+result = validator.ensure_ordering()
+
+calc(result[0])
+calc(result[1])
