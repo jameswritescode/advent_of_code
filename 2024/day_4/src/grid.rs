@@ -15,74 +15,55 @@ impl Grid {
         }
     }
 
-    pub(crate) fn count_xmas(&self) -> usize {
-        let mut num = 0;
+    // In the grim darkness of the 21st century there is only this mess.
+    pub(crate) fn find_word(&self, word: &str, directions: Vec<Position>) -> Vec<Vec<Position>> {
+        let letters: Vec<char> = word.chars().collect();
+        let word_len = letters.len();
+        let mut word_positions: Vec<Vec<Position>> = vec![];
 
-        for (i, j) in self.positions('X') {
-            let mut positions: Vec<(Position, Position)> = Vec::with_capacity(8);
+        for (i, line) in self.inner.iter().enumerate() {
+            for (j, &current) in line.iter().enumerate() {
+                if current != letters[0] {
+                    continue;
+                }
 
-            for di in -1..=1 {
-                for dj in -1..=1 {
-                    if di == 0 && dj == 0 {
-                        continue;
+                let start_position = (i as isize, j as isize);
+
+                for &(di, dj) in &directions {
+                    let mut found_positions = vec![start_position];
+                    let mut current_position = (start_position.0 + di, start_position.1 + dj);
+                    let mut found_end = false;
+
+                    for (li, &letter) in letters.iter().skip(1).enumerate() {
+                        if !self.validate_position(current_position) {
+                            break;
+                        }
+
+                        let lookup =
+                            self.inner[current_position.0 as usize][current_position.1 as usize];
+
+                        if lookup == letter {
+                            found_positions.push(current_position);
+                            current_position.0 += di;
+                            current_position.1 += dj;
+                        } else {
+                            break;
+                        }
+
+                        if li == word_len - 2 {
+                            found_end = true;
+                            break;
+                        }
                     }
 
-                    let ni = i as isize + di;
-                    let nj = j as isize + dj;
-
-                    if self.validate_position((ni, nj)) {
-                        positions.push(((ni, nj), (di, dj)));
+                    if found_end {
+                        word_positions.push(found_positions);
                     }
                 }
             }
-
-            for position in positions {
-                num += self.find_mas('M', position.0, position.1);
-            }
         }
 
-        num
-    }
-
-    fn find_mas(&self, current_char: char, position: Position, direction: Position) -> usize {
-        if self.inner[position.0 as usize][position.1 as usize] != current_char {
-            return 0;
-        }
-
-        match current_char {
-            'M' => self.find_next('A', position, direction),
-            'A' => self.find_next('S', position, direction),
-            'S' => 1,
-            _ => 0,
-        }
-    }
-
-    fn find_next(&self, next_char: char, position: Position, direction: Position) -> usize {
-        let next_position = (position.0 + direction.0, position.1 + direction.1);
-
-        if self.validate_position(next_position) {
-            self.find_mas(next_char, next_position, direction)
-        } else {
-            0
-        }
-    }
-
-    fn positions(&self, c: char) -> Vec<(usize, usize)> {
-        self.inner
-            .iter()
-            .enumerate()
-            .flat_map(|(i, line)| {
-                line.iter().enumerate().filter_map(
-                    move |(j, &char)| {
-                        if char == c {
-                            Some((i, j))
-                        } else {
-                            None
-                        }
-                    },
-                )
-            })
-            .collect()
+        word_positions
     }
 
     fn validate_position(&self, position: Position) -> bool {
