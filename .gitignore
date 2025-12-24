@@ -1,2 +1,3 @@
 *.txt
 target/
+node_modules/
