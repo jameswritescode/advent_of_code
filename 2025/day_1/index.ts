@@ -1,4 +1,4 @@
-import fs from "fs";
+import { type Result, solve } from "../helpers.ts";
 
 const START = 50;
 
@@ -7,7 +7,7 @@ const MAX = 99;
 
 const SIZE = MAX - MIN + 1;
 
-function solve(input: string[]) {
+function day1(input: string[]): Result {
   let part1 = 0;
   let part2 = 0;
   let current = START;
@@ -29,7 +29,7 @@ function solve(input: string[]) {
     if (current === 0) part1 += 1;
   }
 
-  console.log({ part1, part2 });
+  return { part1, part2 };
 }
 
-solve(fs.readFileSync("./input.txt", "utf-8").trim().split("\n"));
+solve(day1);

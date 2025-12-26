@@ -1,0 +1,19 @@
+{
+  "name": "AoC 2025",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "James Newton <hello@jamesnewton.com>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.24.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  }
+}
